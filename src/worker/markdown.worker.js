@@ -1,4 +1,4 @@
-import { marked } from 'marked'
+import MarkdownIt from 'markdown-it'
 
 let buffer = ''
 
@@ -24,6 +24,25 @@ function extractTocFrom(text) {
   return toc
 }
 
+const md = new MarkdownIt({ html: true, linkify: true, typographer: true })
+
+// Inject IDs into heading_open tokens so rendered HTML headers have ids
+md.renderer.rules.heading_open = function (tokens, idx, options, env, self) {
+  const token = tokens[idx]
+  const next = tokens[idx + 1]
+  let text = ''
+  if (next && next.type === 'inline') text = next.content
+  const id = slugify(text || '')
+  if (id) {
+    // set or push id attribute
+    if (!token.attrs) token.attrs = []
+    const exists = token.attrs.findIndex((a) => a[0] === 'id')
+    if (exists >= 0) token.attrs[exists][1] = id
+    else token.attrs.push(['id', id])
+  }
+  return self.renderToken(tokens, idx, options)
+}
+
 onmessage = (ev) => {
   const { type, text } = ev.data
   if (type === 'chunk') {
@@ -32,14 +51,8 @@ onmessage = (ev) => {
     const toc = extractTocFrom(buffer)
     postMessage({ type: 'toc', payload: toc })
   } else if (type === 'done') {
-    // final parse to HTML
-    const renderer = new marked.Renderer()
-    renderer.heading = function (text, level, raw, slugger) {
-      const id = slugify(raw)
-      return `<h${level} id="${id}">${text}</h${level}>\n`
-    }
-
-    const html = marked.parse(buffer, { renderer })
+    // final parse to HTML using markdown-it
+    const html = md.render(buffer)
     const toc = extractTocFrom(buffer)
     postMessage({ type: 'html', payload: { html, toc } })
     buffer = ''
