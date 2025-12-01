@@ -2,8 +2,9 @@ import React, { useRef, useState } from 'react'
 import Button from '@mui/material/Button'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import CircularProgress from '@mui/material/CircularProgress'
+import { processFile } from '../lib/markdown'
 
-export default function Upload({ worker, onProgress }) {
+export default function Upload({ onProgress, onToc, onHtml }) {
   const inputRef = useRef(null)
   const [loading, setLoading] = useState(false)
 
@@ -11,24 +12,13 @@ export default function Upload({ worker, onProgress }) {
     if (!file) return
     setLoading(true)
     onProgress?.(0)
-
-    // stream file to the worker to avoid blocking main thread
-    const reader = file.stream().getReader()
-    const decoder = new TextDecoder()
-    let received = 0
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      const chunk = decoder.decode(value, { stream: true })
-      received += value.length
-      const pct = Math.min(100, Math.round((received / file.size) * 100))
-      onProgress?.(pct)
-      worker?.postMessage({ type: 'chunk', text: chunk })
-    }
-
-    worker?.postMessage({ type: 'done' })
+    // process file on main thread (streamed), using shared markdown processor
+    await processFile(file, {
+      onToc,
+      onHtml,
+      onProgress,
+    })
     setLoading(false)
-    onProgress?.(100)
   }
 
   const onSelect = (e) => {

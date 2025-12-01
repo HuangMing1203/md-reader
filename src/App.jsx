@@ -16,26 +16,6 @@ export default function App() {
   const [html, setHtml] = useState('')
   const [toc, setToc] = useState([])
   const [progress, setProgress] = useState(0)
-  const workerRef = useRef(null)
-
-  useEffect(() => {
-    // create worker
-    workerRef.current = new Worker(new URL('./worker/markdown.worker.js', import.meta.url), { type: 'module' })
-
-    workerRef.current.onmessage = (ev) => {
-      const { type, payload } = ev.data
-      if (type === 'html') {
-        setHtml(payload.html)
-        setToc(payload.toc)
-      } else if (type === 'toc') {
-        setToc(payload)
-      }
-    }
-
-    return () => {
-      workerRef.current?.terminate()
-    }
-  }, [])
 
   const handleToggleDrawer = () => setDrawerOpen((s) => !s)
 
@@ -51,8 +31,12 @@ export default function App() {
             MD Reader
           </Typography>
           <Upload
-            worker={workerRef.current}
             onProgress={setProgress}
+            onToc={setToc}
+            onHtml={({ html, toc }) => {
+              setHtml(html)
+              setToc(toc)
+            }}
           />
         </Toolbar>
       </AppBar>
