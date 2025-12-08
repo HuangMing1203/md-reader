@@ -16,7 +16,7 @@
     "dompurify": "^3.3.0",
     "markdown-it": "^14.1.0",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.2.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.0",
