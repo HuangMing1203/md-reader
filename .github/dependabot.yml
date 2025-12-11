@@ -10,7 +10,7 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      production-dependencies:
+      deps:
         dependency-type: "production"
-      development-dependencies:
+      deps-dev:
         dependency-type: "development"
