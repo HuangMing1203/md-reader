@@ -1,25 +1,7 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import DOMPurify from 'dompurify'
-import { styled } from '@mui/material/styles'
-import Box from '@mui/material/Box'
 import LinearProgress from '@mui/material/LinearProgress'
-
-const MarkdownBody = styled('div')(({ theme }) => ({
-  // Only the truly necessary rules
-  backgroundColor: theme.palette.background.paper,        // dark mode support
-  padding: theme.spacing(3),                              // readable horizontal spacing
-  '& h1, & h2, & h3, & h4, & h5, & h6': {
-    scrollMarginTop: theme.spacing(12),                   // fixed header compensation
-  },
-  '& img': {
-    maxWidth: '100%',
-    height: 'auto',
-  },
-  // Responsive padding (matches original mobile behavior)
-  [theme.breakpoints.down('sm')]: {
-    padding: theme.spacing(2),
-  },
-}))
+import Paper from '@mui/material/Paper'
 
 export default function MarkdownViewer({ html, progress }) {
   const containerRef = useRef(null)
@@ -41,12 +23,54 @@ export default function MarkdownViewer({ html, progress }) {
   }, [html])
 
   return (
-    <Box sx={{ width: '100%' }}>
-      {progress > 0 && progress < 100 && <LinearProgress variant="determinate" value={progress} />}
-      <MarkdownBody
-        ref={containerRef}
-        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }}
-      />
-    </Box>
+    <>
+      {progress > 0 && progress < 100 && (
+        <LinearProgress variant="determinate" value={progress} />
+      )}
+      {html && (
+        <Paper
+          ref={containerRef}
+          component="article"
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }}
+          sx={{
+            p: { xs: 2, md: 3 },
+            '& h1': { typography: 'h3' },
+            '& h2': { typography: 'h4' },
+            '& h3': { typography: 'h5' },
+            '& h4': { typography: 'h6' },
+            '& h5': { typography: 'subtitle1' },
+            '& h6': { typography: 'subtitle2' },
+            '& p': { typography: 'body1' },
+            '& a': {
+              color: 'primary.main',
+              '&:hover': { color: 'primary.light' },
+            },
+            '& img': { maxWidth: '100%', height: 'auto' },
+            '& ul, & ol': { pl: 3, mb: 2 },
+            '& blockquote': {
+              borderLeft: '4px solid',
+              borderColor: 'grey.300',
+              pl: 2,
+              color: 'text.secondary',
+              backgroundColor: 'action.hover',
+            },
+            '& table': { maxWidth: '100%', borderCollapse: 'collapse' },
+            '& th, & td': {
+              border: 'thin solid',
+              borderColor: 'divider',
+              p: 1,
+            },
+            '& pre': {
+              backgroundColor: 'rgba(0,0,0,0.04)',
+              p: 2,
+              borderRadius: 1,
+              overflow: 'auto',
+              fontFamily: 'Monaco, Menlo, monospace',
+            },
+            '& code': { fontFamily: 'Monaco, Menlo, monospace' },
+          }}
+        />
+      )}
+    </>
   )
 }

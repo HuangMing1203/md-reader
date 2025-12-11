@@ -1,22 +1,24 @@
 import MarkdownIt from 'markdown-it'
 
 function slugify(text) {
-  return text
-    .toString()
-    .trim()
-    .toLowerCase()
-    // Normalize to decompose combined letters (NFKD), so accents become separate marks
-    .normalize('NFKD')
-    // Remove diacritic marks
-    .replace(/\p{M}/gu, '')
-    // Remove any character that is not a letter, number, space or hyphen (unicode-aware)
-    .replace(/[^\p{L}\p{N}\s-]+/gu, '')
-    // Replace spaces with single hyphens
-    .replace(/\s+/g, '-')
-    // Collapse multiple hyphens
-    .replace(/-+/g, '-')
-    // Trim leading/trailing hyphens
-    .replace(/^-|-$/g, '')
+  return (
+    text
+      .toString()
+      .trim()
+      .toLowerCase()
+      // Normalize to decompose combined letters (NFKD), so accents become separate marks
+      .normalize('NFKD')
+      // Remove diacritic marks
+      .replace(/\p{M}/gu, '')
+      // Remove any character that is not a letter, number, space or hyphen (unicode-aware)
+      .replace(/[^\p{L}\p{N}\s-]+/gu, '')
+      // Replace spaces with single hyphens
+      .replace(/\s+/g, '-')
+      // Collapse multiple hyphens
+      .replace(/-+/g, '-')
+      // Trim leading/trailing hyphens
+      .replace(/^-|-$/g, '')
+  )
 }
 
 function extractTocFrom(text) {
@@ -65,10 +67,18 @@ export async function processFile(file, { onToc, onHtml, onProgress } = {}) {
     received += value.length
     if (onProgress && file.size) {
       const pct = Math.min(100, Math.round((received / file.size) * 100))
-      try { onProgress(pct) } catch (e) { /* ignore */ }
+      try {
+        onProgress(pct)
+      } catch (e) {
+        /* ignore */
+      }
     }
     if (onToc) {
-      try { onToc(extractTocFrom(buffer)) } catch (e) { /* ignore */ }
+      try {
+        onToc(extractTocFrom(buffer))
+      } catch (e) {
+        /* ignore */
+      }
     }
   }
 

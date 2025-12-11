@@ -18,11 +18,16 @@ export default function TocDrawer({ open, onClose, toc = [] }) {
   return (
     <Drawer open={open} onClose={onClose}>
       <div style={{ width: 280, padding: 12 }} role="presentation">
-        <Typography variant="h6" sx={{ mb: 1 }}>Table of Contents</Typography>
+        <Typography variant="h6" sx={{ mb: 1 }}>
+          Table of Contents
+        </Typography>
         <List>
           {toc.map((item, idx) => (
             <ListItem key={idx} disablePadding>
-              <ListItemButton onClick={() => handleClick(item.id)} sx={{ pl: Math.min(4, (item.level - 1) * 2) }}>
+              <ListItemButton
+                onClick={() => handleClick(item.id)}
+                sx={{ pl: Math.min(4, (item.level - 1) * 2) }}
+              >
                 <ListItemText primary={item.text} />
               </ListItemButton>
             </ListItem>
