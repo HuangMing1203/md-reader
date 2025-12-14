@@ -87,7 +87,3 @@ export async function processFile(file, { onToc, onHtml, onProgress } = {}) {
   if (onHtml) onHtml({ html, toc })
   if (onProgress) onProgress(100)
 }
-
-export function extractToc(text) {
-  return extractTocFrom(text || '')
-}
