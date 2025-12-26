@@ -75,7 +75,8 @@ export async function processFile(file, { onToc, onHtml, onProgress } = {}) {
     }
     if (onToc) {
       try {
-        onToc(extractTocFrom(buffer))
+        const toc = extractTocFrom(buffer)
+        onToc(toc)
       } catch (e) {
         /* ignore */
       }
@@ -84,6 +85,7 @@ export async function processFile(file, { onToc, onHtml, onProgress } = {}) {
 
   const html = md.render(buffer)
   const toc = extractTocFrom(buffer)
-  if (onHtml) onHtml({ html, toc })
+  if (onToc) onToc(toc)
+  if (onHtml) onHtml(html)
   if (onProgress) onProgress(100)
 }

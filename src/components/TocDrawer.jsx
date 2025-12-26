@@ -1,4 +1,3 @@
-import React from 'react'
 import Drawer from '@mui/material/Drawer'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -12,7 +11,7 @@ export default function TocDrawer({ open, onClose, toc = [] }) {
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
-    onClose?.()
+    if (onClose) onClose()
   }
 
   return (

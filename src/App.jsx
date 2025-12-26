@@ -1,6 +1,4 @@
-import { useState } from 'react'
-import { useErrorMessage } from './components/ErrorMessageProvider'
-import { processFile } from './utils/markdown'
+import { lazy, Suspense, useState } from 'react'
 
 import AppBar from '@mui/material/AppBar'
 import Container from '@mui/material/Container'
@@ -9,49 +7,13 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import MenuIcon from '@mui/icons-material/Menu'
 import FileSelector from './components/FileSelector'
-import MarkdownViewer from './components/MarkdownViewer'
-import TocDrawer from './components/TocDrawer'
 import ErrorMessageProvider from './components/ErrorMessageProvider'
 
-function MarkdownFileSelector({ setToc, setHtml, setProgress }) {
-  const setError = useErrorMessage()
-
-  const handleFileSubmit = async (blob, url, source) => {
-    setError('')
-    setHtml('')
-    setToc([])
-    setProgress(0)
-    try {
-      await processFile(blob, {
-        onProgress: setProgress,
-        onToc: setToc,
-        onHtml: ({ html, toc }) => {
-          setHtml(html)
-          setToc(toc)
-        },
-      })
-    } catch (err) {
-      console.error(err)
-      setError('Failed to process the markdown file.')
-    }
-  }
-
-  return (
-    <FileSelector
-      placeholder="Markdown file URL or upload"
-      accept="text/markdown,text/plain,.md,.markdown"
-      onSubmit={handleFileSubmit}
-    />
-  )
-}
+const MarkdownViewer = lazy(() => import('./components/MarkdownViewer'))
 
 export default function App() {
+  const [content, setContent] = useState(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [html, setHtml] = useState('')
-  const [toc, setToc] = useState([])
-  const [progress, setProgress] = useState(0)
-
-  const handleToggleDrawer = () => setDrawerOpen((s) => !s)
 
   return (
     <>
@@ -59,7 +21,7 @@ export default function App() {
         <Toolbar>
           <IconButton
             color="inherit"
-            onClick={handleToggleDrawer}
+            onClick={() => setDrawerOpen(true)}
             aria-label="menu"
             sx={{ ml: -1, mr: 1 }}
           >
@@ -76,20 +38,20 @@ export default function App() {
         sx={{ my: 4, display: 'flex', flexFlow: 'nowrap column', gap: 3 }}
       >
         <ErrorMessageProvider>
-          <MarkdownFileSelector
-            setHtml={setHtml}
-            setToc={setToc}
-            setProgress={setProgress}
+          <FileSelector
+            placeholder="Markdown file URL or upload"
+            accept="text/markdown,text/plain,.md,.markdown"
+            onSubmit={(blob) => setContent(blob)}
           />
         </ErrorMessageProvider>
 
-        <MarkdownViewer html={html} progress={progress} />
-
-        <TocDrawer
-          open={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
-          toc={toc}
-        />
+        <Suspense>
+          <MarkdownViewer
+            content={content}
+            drawerOpen={drawerOpen}
+            onDrawerClose={() => setDrawerOpen(false)}
+          />
+        </Suspense>
       </Container>
     </>
   )
