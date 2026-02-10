@@ -5,7 +5,7 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 
-export default function TocDrawer({ open, onClose, toc = [] }) {
+export default function TocDrawer({ open, onClose, toc = [], width = 280 }) {
   const handleClick = (id) => {
     const el = document.getElementById(id)
     if (el) {
@@ -15,24 +15,29 @@ export default function TocDrawer({ open, onClose, toc = [] }) {
   }
 
   return (
-    <Drawer open={open} onClose={onClose}>
-      <div style={{ width: 280, padding: 12 }} role="presentation">
-        <Typography variant="h6" sx={{ mb: 1 }}>
-          Table of Contents
-        </Typography>
-        <List>
-          {toc.map((item, idx) => (
-            <ListItem key={idx} disablePadding>
-              <ListItemButton
-                onClick={() => handleClick(item.id)}
-                sx={{ pl: Math.min(4, (item.level - 1) * 2) }}
-              >
-                <ListItemText primary={item.text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </div>
+    <Drawer
+      open={open}
+      onClose={onClose}
+      sx={{
+        width,
+        '& .MuiDrawer-paper': { width },
+      }}
+    >
+      <Typography variant="h6" sx={{ mx: 2, my: 1 }}>
+        Table of Contents
+      </Typography>
+      <List>
+        {toc.map((item, idx) => (
+          <ListItem key={idx} disablePadding>
+            <ListItemButton
+              onClick={() => handleClick(item.id)}
+              sx={{ pl: Math.min(4, item.level) * 2 }}
+            >
+              <ListItemText primary={item.text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
     </Drawer>
   )
 }

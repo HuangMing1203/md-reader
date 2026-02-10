@@ -112,7 +112,13 @@ export default function MarkdownViewer({ content }) {
           color="primary"
           aria-label="menu"
           onClick={() => setDrawerOpen(true)}
-          sx={{ position: 'fixed', bottom: 16, right: 16 }}
+          sx={{
+            position: 'fixed',
+            bottom: 16,
+            right: 16,
+            transition: 'transform 0.3s ease-in-out',
+            transform: drawerOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+          }}
         >
           <MenuIcon />
         </Fab>
