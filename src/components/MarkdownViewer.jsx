@@ -4,6 +4,8 @@ import { processFile } from '../utils/markdown'
 
 import LinearProgress from '@mui/material/LinearProgress'
 import Paper from '@mui/material/Paper'
+import Fab from '@mui/material/Fab'
+import MenuIcon from '@mui/icons-material/Menu'
 import TocDrawer from './TocDrawer'
 
 function HTMLView({ html }) {
@@ -71,10 +73,11 @@ function HTMLView({ html }) {
   )
 }
 
-export default function MarkdownViewer({ content, drawerOpen, onDrawerClose }) {
+export default function MarkdownViewer({ content }) {
   const [html, setHtml] = useState('')
   const [toc, setToc] = useState([])
   const [progress, setProgress] = useState(0)
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
     setHtml('')
@@ -104,7 +107,18 @@ export default function MarkdownViewer({ content, drawerOpen, onDrawerClose }) {
 
       {html && <HTMLView html={html} />}
 
-      <TocDrawer open={drawerOpen} onClose={onDrawerClose} toc={toc} />
+      {toc.length > 0 && (
+        <Fab
+          color="primary"
+          aria-label="menu"
+          onClick={() => setDrawerOpen(true)}
+          sx={{ position: 'fixed', bottom: 16, right: 16 }}
+        >
+          <MenuIcon />
+        </Fab>
+      )}
+
+      <TocDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} toc={toc} />
     </>
   )
 }
