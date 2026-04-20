@@ -15,17 +15,12 @@ export default defineConfig({
         name: 'MD Reader',
         short_name: 'MD Reader',
         description: 'A markdown reader web app',
-        start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',
         theme_color: '#1976d2',
-        icons: [
-          {
-            src: 'vite.svg',
-            sizes: 'any',
-            type: 'image/svg+xml'
-          }
-        ]
+      },
+      pwaAssets: {
+        image: "public/favicon.png",
       }
     })
   ],
